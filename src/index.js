@@ -25,7 +25,7 @@ function checksCreateTodosUserAvailability(request, response, next) {
   const teste = user.todos.lenth > 9 && !user.pro;
   if (user.todos.length > 9 && !user.pro) {
     return response
-      .status(400)
+      .status(403)
       .json({ error: "You already have 10 todos, do you want to be pro? 😁" });
   }
   return next();
@@ -43,11 +43,16 @@ function checksTodoExists(request, response, next) {
     todo = user.todos.find((todo) => todo.id === id);
   }
 
-  if (!validId || !user || !todo) {
+  if (!validId) {
+    return response.status(400).json({ error: "To do dont exists!" });
+  }
+
+  if (!user || !todo) {
     return response.status(404).json({ error: "To do dont exists!" });
   }
 
   request.todo = todo;
+  request.user = user;
   request.id = id;
   return next();
 }
